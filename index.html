@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kishimoto</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            obsidian:  '#0A0A0A',
+            charcoal:  '#141414',
+            ash:       '#2A2A2A',
+            smoke:     '#6B6B6B',
+            bone:      '#E8E0D5',
+            ivory:     '#F5F0E8',
+            gold:      '#C9A96E',
+            'gold-dim':'#8A6F3E',
+            error:     '#A34040',
+            success:   '#3D7A5E',
+          },
+          fontFamily: {
+            display: ['"Cormorant Garamond"', 'serif'],
+            body:    ['"DM Sans"', 'sans-serif'],
+            mono:    ['"Courier Prime"', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: #0A0A0A;
+      color: #E8E0D5;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      margin: 0;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #0A0A0A; }
+    ::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 2px; }
+
+    /* ── Nav underline animation ── */
+    .nav-link {
+      position: relative;
+      letter-spacing: 0.18em;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: #C9A96E;
+      transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .nav-link:hover::after { width: 100%; }
+
+    /* ── Dropdown ── */
+    .dropdown-menu {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px);
+      transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .dropdown-menu.is-open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    /* ── Hero text ── */
+    .hero-headline {
+      font-size: clamp(3.5rem, 9vw, 8rem);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .hero-sub {
+      font-size: clamp(0.75rem, 1.4vw, 0.9rem);
+      letter-spacing: 0.22em;
+    }
+
+    /* ── Section headings ── */
+    .section-heading {
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      color: #F5F0E8;
+    }
+
+    /* ── Modal backdrop ── */
+    .modal-backdrop {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    /* ── Tab active ── */
+    .tab-btn.active {
+      color: #F5F0E8;
+      border-bottom-color: #C9A96E;
+    }
+
+    /* ── Input focus ── */
+    .field {
+      background: #1a1a1a;
+      border: 1px solid #2A2A2A;
+      color: #E8E0D5;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      transition: border-color 0.2s;
+      outline: none;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 2px;
+    }
+    .field::placeholder { color: #6B6B6B; }
+    .field:focus { border-color: #C9A96E; }
+
+    /* ── Primary button ── */
+    .btn-primary {
+      background: #C9A96E;
+      color: #0A0A0A;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.875rem 2rem;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s, opacity 0.2s;
+    }
+    .btn-primary:hover { background: #b8965a; }
+
+    /* ── Ghost button ── */
+    .btn-ghost {
+      background: transparent;
+      color: #C9A96E;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.875rem 2rem;
+      border: 1px solid #C9A96E;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { background: #C9A96E; color: #0A0A0A; }
+
+    /* ── Category card float effect ── */
+    .category-card {
+      transform: translateY(0);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      transition:
+        transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .category-card:hover {
+      transform: translateY(-14px);
+      box-shadow: 0 32px 64px rgba(0,0,0,0.65), 0 0 0 1px rgba(201,169,110,0.15);
+    }
+
+    /* ── Card video — hidden at rest, fades in on hover ── */
+    .card-video {
+      opacity: 0;
+      transition: opacity 0.7s ease;
+    }
+    .category-card:hover .card-video { opacity: 1; }
+
+    /* ── Product card hover ── */
+    .product-card:hover .product-overlay { opacity: 1; }
+    .product-overlay {
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .product-card img { transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+    .product-card:hover img { transform: scale(1.04); }
+
+    /* ── Account panel ── */
+    .account-tab.active {
+      color: #F5F0E8;
+      border-left: 2px solid #C9A96E;
+      padding-left: calc(1rem - 2px);
+    }
+
+    /* ── Hamburger ── */
+    @media (max-width: 768px) {
+      .desktop-nav { display: none; }
+      .mobile-menu-btn { display: flex; }
+    }
+    @media (min-width: 769px) {
+      .mobile-menu-btn { display: none; }
+      .mobile-nav { display: none !important; }
+    }
+  </style>
+</head>
+
+<body class="bg-obsidian text-bone">
+
+  <!-- ══════════════════════════════════════════
+       HEADER / NAVIGATION
+  ══════════════════════════════════════════ -->
+  <header id="site-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" style="background: rgba(10,10,10,0.0);">
+    <div class="max-w-[1440px] mx-auto px-6 md:px-12">
+
+      <!-- Top bar: left nav | brand | right icons -->
+      <div class="flex items-center justify-between h-20">
+
+        <!-- Left nav group (desktop) -->
+        <nav class="desktop-nav flex items-center gap-8">
+          <div class="dropdown relative">
+            <button class="nav-link text-bone text-[0.7rem] font-body font-400 uppercase tracking-widest hover:text-ivory transition-colors duration-200 flex items-center gap-1">
+              Collections
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" class="opacity-50">
+                <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="dropdown-menu absolute top-full left-0 mt-3 w-48 bg-charcoal border border-ash py-2 z-50">
+              <a href="collections/demon-corp.html" class="block px-5 py-2.5 text-[0.7rem] uppercase tracking-widest text-smoke hover:text-gold hover:bg-ash/30 transition-colors duration-150">Demon Corp.</a>
+              <a href="collections/the-attack.html" class="block px-5 py-2.5 text-[0.7rem] uppercase tracking-widest text-smoke hover:text-gold hover:bg-ash/30 transition-colors duration-150">The Attack</a>
+              <a href="collections/hidden-village.html" class="block px-5 py-2.5 text-[0.7rem] uppercase tracking-widest text-smoke hover:text-gold hover:bg-ash/30 transition-colors duration-150">Hidden Village</a>
+              <div class="my-1.5 border-t border-ash"></div>
+              <a href="collections/all-collections.html" class="block px-5 py-2.5 text-[0.7rem] uppercase tracking-widest text-smoke hover:text-gold hover:bg-ash/30 transition-colors duration-150">All Collections</a>
+            </div>
+          </div>
+          <div class="dropdown relative">
+            <button class="nav-link text-bone text-[0.7rem] font-body uppercase tracking-widest hover:text-ivory transition-colors duration-200 flex items-center gap-1">
+              Patterns
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" class="opacity-50">
+                <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="dropdown-menu absolute top-full left-0 mt-3 w-52 bg-charcoal border border-ash py-2 z-50">
+              <a href="patterns/physical-packs.html" class="block px-5 py-2.5 text-[0.7rem] uppercase tracking-widest text-smoke hover:text-gold hover:bg-ash/30 transition-colors duration-150">Physical Packs</a>
+              <a href="patterns/digital-packs.html" class="block px-5 py-2.5 text-[0.7rem] uppercase tracking-widest text-smoke hover:text-gold hover:bg-ash/30 transition-colors duration-150">Digital Packs</a>
+              <a href="#free-haori" class="block px-5 py-2.5 text-[0.7rem] uppercase tracking-widest text-gold hover:bg-ash/30 transition-colors duration-150">Free Haori Pack</a>
+              <div class="my-1.5 border-t border-ash"></div>
+              <a href="#" onclick="openAccount()" class="block px-5 py-2.5 text-[0.7rem] uppercase tracking-widest text-gold hover:bg-ash/30 transition-colors duration-150">Your Digital Downloads ↗</a>
+            </div>
+          </div>
+        </nav>
+
+        <!-- Brand name (centered) -->
+        <a href="#" class="absolute left-1/2 -translate-x-1/2 font-display text-ivory tracking-[0.3em] uppercase text-2xl md:text-3xl select-none hover:text-gold transition-colors duration-300">
+          Kishimoto
+        </a>
+
+        <!-- Right icon group -->
+        <div class="flex items-center gap-5 ml-auto">
+          <!-- Desktop right links -->
+          <nav class="desktop-nav flex items-center gap-8 mr-6">
+            <a href="#spreadsheet" class="nav-link text-bone text-[0.7rem] font-body uppercase tracking-widest hover:text-ivory transition-colors duration-200">The Spreadsheet</a>
+            <a href="#about" class="nav-link text-bone text-[0.7rem] font-body uppercase tracking-widest hover:text-ivory transition-colors duration-200">About</a>
+            <a href="#contact" class="nav-link text-bone text-[0.7rem] font-body uppercase tracking-widest hover:text-ivory transition-colors duration-200">Contact</a>
+          </nav>
+
+          <!-- Search icon -->
+          <button class="text-smoke hover:text-bone transition-colors duration-200 p-1" aria-label="Search">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </button>
+
+          <!-- Account icon -->
+          <button id="account-btn" class="text-smoke hover:text-gold transition-colors duration-200 p-1 relative" aria-label="Account">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+          </button>
+
+          <!-- Cart icon -->
+          <button class="text-smoke hover:text-bone transition-colors duration-200 p-1 relative" aria-label="Cart">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
+            </svg>
+            <span class="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-gold rounded-full text-obsidian text-[8px] font-mono font-bold flex items-center justify-center leading-none">2</span>
+          </button>
+
+          <!-- Mobile menu button -->
+          <button id="mobile-menu-btn" class="mobile-menu-btn text-smoke hover:text-bone transition-colors ml-1 p-1" aria-label="Menu">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile nav -->
+      <div id="mobile-nav" class="mobile-nav hidden border-t border-ash py-4 pb-6">
+        <div class="flex flex-col gap-1">
+          <p class="text-smoke text-[0.65rem] uppercase tracking-widest px-1 mb-2 mt-1">Navigate</p>
+          <a href="#" class="text-bone text-[0.75rem] uppercase tracking-widest py-2 px-1 hover:text-gold transition-colors">Collections</a>
+          <a href="#" class="text-bone text-[0.75rem] uppercase tracking-widest py-2 px-1 hover:text-gold transition-colors">Patterns</a>
+          <a href="#spreadsheet" class="text-bone text-[0.75rem] uppercase tracking-widest py-2 px-1 hover:text-gold transition-colors">The Spreadsheet</a>
+          <a href="#about" class="text-bone text-[0.75rem] uppercase tracking-widest py-2 px-1 hover:text-gold transition-colors">About</a>
+          <a href="#contact" class="text-bone text-[0.75rem] uppercase tracking-widest py-2 px-1 hover:text-gold transition-colors">Contact</a>
+          <div class="border-t border-ash mt-2 pt-3">
+            <button onclick="openAccount()" class="text-gold text-[0.75rem] uppercase tracking-widest py-2 px-1 hover:text-bone transition-colors flex items-center gap-2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+              Sign In / Account
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════
+       CATEGORY CARDS — floating hover
+  ══════════════════════════════════════════ -->
+  <section class="pt-36 md:pt-44 pb-20 md:pb-28 bg-obsidian">
+    <div class="max-w-[1440px] mx-auto px-6 md:px-16">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+
+        <!-- Card 1: Garments -->
+        <a href="#" class="category-card group relative overflow-hidden block bg-[#1a1410]" style="aspect-ratio: 3/4;">
+          <video
+            class="card-video absolute inset-0 w-full h-full object-cover"
+            muted loop playsinline preload="none"
+            data-src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+          ></video>
+          <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,10,10,0.88) 0%, rgba(10,10,10,0.35) 55%, rgba(10,10,10,0.1) 100%);"></div>
+          <div class="absolute top-0 left-0 right-0 h-px bg-gold scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] origin-left"></div>
+          <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+            <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-3 opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-0" style="transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.22,1,0.36,1);">Shop</p>
+            <h3 class="font-display text-ivory text-4xl md:text-5xl font-light tracking-wide" style="text-shadow: 0 2px 20px rgba(0,0,0,0.6);">Garments</h3>
+            <div class="w-8 h-px bg-gold mt-5 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 delay-75 ease-[cubic-bezier(0.22,1,0.36,1)]"></div>
+            <p class="font-body text-smoke text-xs uppercase tracking-widest mt-4 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0" style="transition: opacity 0.35s 0.1s ease, transform 0.4s 0.1s cubic-bezier(0.22,1,0.36,1);">View Collection →</p>
+          </div>
+        </a>
+
+        <!-- Card 2: Physical Patterns -->
+        <a href="#" class="category-card group relative overflow-hidden block md:mt-10 bg-[#101418]" style="aspect-ratio: 3/4;">
+          <video
+            class="card-video absolute inset-0 w-full h-full object-cover"
+            muted loop playsinline preload="none"
+            data-src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
+          ></video>
+          <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,10,10,0.88) 0%, rgba(10,10,10,0.35) 55%, rgba(10,10,10,0.1) 100%);"></div>
+          <div class="absolute top-0 left-0 right-0 h-px bg-gold scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] origin-left"></div>
+          <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+            <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-3 opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-0" style="transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.22,1,0.36,1);">Shop</p>
+            <h3 class="font-display text-ivory text-4xl md:text-5xl font-light tracking-wide" style="text-shadow: 0 2px 20px rgba(0,0,0,0.6);">Physical<br />Patterns</h3>
+            <div class="w-8 h-px bg-gold mt-5 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 delay-75 ease-[cubic-bezier(0.22,1,0.36,1)]"></div>
+            <p class="font-body text-smoke text-xs uppercase tracking-widest mt-4 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0" style="transition: opacity 0.35s 0.1s ease, transform 0.4s 0.1s cubic-bezier(0.22,1,0.36,1);">Browse Patterns →</p>
+          </div>
+        </a>
+
+        <!-- Card 3: Digital Patterns -->
+        <div class="flex flex-col gap-4">
+          <a href="#" class="category-card group relative overflow-hidden block bg-[#121210]" style="aspect-ratio: 3/4;">
+            <video
+              class="card-video absolute inset-0 w-full h-full object-cover"
+              muted loop playsinline preload="none"
+              data-src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4"
+            ></video>
+            <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,10,10,0.88) 0%, rgba(10,10,10,0.35) 55%, rgba(10,10,10,0.1) 100%);"></div>
+            <div class="absolute top-0 left-0 right-0 h-px bg-gold scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] origin-left"></div>
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+              <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-3 opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-0" style="transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.22,1,0.36,1);">Shop</p>
+              <h3 class="font-display text-ivory text-4xl md:text-5xl font-light tracking-wide" style="text-shadow: 0 2px 20px rgba(0,0,0,0.6);">Digital<br />Patterns</h3>
+              <div class="w-8 h-px bg-gold mt-5 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 delay-75 ease-[cubic-bezier(0.22,1,0.36,1)]"></div>
+              <p class="font-body text-smoke text-xs uppercase tracking-widest mt-4 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0" style="transition: opacity 0.35s 0.1s ease, transform 0.4s 0.1s cubic-bezier(0.22,1,0.36,1);">Download Now →</p>
+            </div>
+          </a>
+          <!-- Free haori prompt -->
+          <p class="text-center font-body text-smoke text-xs leading-relaxed">
+            <a href="patterns/ichimatsu-set.html?pattern=haori" class="text-bone hover:text-gold transition-colors duration-200 border-b border-ash hover:border-gold pb-px italic">Start with a free pattern and guide, on the house</a>
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       THE SPREADSHEET — feature band
+  ══════════════════════════════════════════ -->
+  <section class="py-24 md:py-32 border-y border-ash">
+    <div class="max-w-[1440px] mx-auto px-6 md:px-16">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-center">
+
+        <!-- Text -->
+        <div class="md:col-span-7">
+          <p class="font-mono text-gold text-[0.65rem] uppercase tracking-widest mb-4">Live · Public</p>
+          <h2 class="font-display text-ivory font-light" style="font-size: clamp(2.2rem, 5vw, 4rem); line-height: 1.1; letter-spacing: 0.01em;">The Spreadsheet</h2>
+          <p class="font-body text-smoke text-sm leading-loose mt-6 max-w-lg">
+            While possibly breaking a few NDA's/regulations, we decided to create a live, updating spreadsheet of every transaction made across Kishimoto LLC. Everything from production costs, to each sale on the website made. See how we're doing here.
+          </p>
+        </div>
+
+        <!-- CTA box -->
+        <div class="md:col-span-5 flex justify-start md:justify-end">
+          <a href="admin/spreadsheet.html" class="group block border border-ash hover:border-gold transition-colors duration-300 p-8 md:p-10 w-full md:max-w-xs" style="background: #141414;">
+            <div class="flex items-start justify-between mb-8">
+              <span class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest">Open</span>
+              <!-- Arrow icon -->
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B6B6B" stroke-width="1.5" stroke-linecap="round" class="group-hover:stroke-gold transition-colors duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 transform transition-transform">
+                <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
+              </svg>
+            </div>
+            <p class="font-display text-ivory text-2xl font-light italic mb-2">The Spreadsheet</p>
+            <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest">Every number. Live.</p>
+            <!-- Bottom pulse indicator -->
+            <div class="flex items-center gap-2 mt-8">
+              <span class="w-1.5 h-1.5 rounded-full bg-success" style="animation: livePulse 2s ease-in-out infinite;"></span>
+              <span class="font-mono text-smoke text-[0.55rem] uppercase tracking-widest">Updating now</span>
+            </div>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       FEATURED — Collections preview
+  ══════════════════════════════════════════ -->
+  <section class="py-24 md:py-36">
+    <div class="max-w-[1440px] mx-auto px-6 md:px-16">
+
+      <!-- Heading -->
+      <div class="flex items-end justify-between mb-12 md:mb-16">
+        <div>
+          <p class="font-mono text-smoke text-[0.65rem] uppercase tracking-widest mb-3">New Arrivals</p>
+          <h2 class="section-heading">Collections</h2>
+        </div>
+        <a href="#" class="hidden md:block font-body text-smoke text-[0.7rem] uppercase tracking-widest hover:text-gold transition-colors border-b border-ash pb-0.5 hover:border-gold">View All →</a>
+      </div>
+
+      <!-- Asymmetric grid -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
+
+        <!-- Large card -->
+        <div class="md:col-span-7 product-card relative overflow-hidden cursor-pointer group">
+          <img src="https://placehold.co/840x1060/141414/2A2A2A?text=AW+2025" alt="Autumn Winter 2025" class="w-full object-cover" style="aspect-ratio: 4/5;" />
+          <div class="product-overlay absolute inset-0 bg-obsidian/60 flex flex-col justify-end p-8">
+            <p class="font-mono text-smoke text-[0.65rem] uppercase tracking-widest mb-2">AW 2025</p>
+            <h3 class="font-display text-ivory text-3xl font-light italic mb-4">Autumn / Winter</h3>
+            <button class="btn-ghost text-xs w-auto self-start">Explore</button>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-6 md:hidden">
+            <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-1">AW 2025</p>
+            <h3 class="font-display text-ivory text-2xl font-light italic">Autumn / Winter</h3>
+          </div>
+        </div>
+
+        <!-- Right column — 2 stacked cards -->
+        <div class="md:col-span-5 flex flex-col gap-4 md:gap-6">
+
+          <div class="product-card relative overflow-hidden cursor-pointer group flex-1">
+            <img src="https://placehold.co/580x500/141414/333?text=SS+2025" alt="Spring Summer 2025" class="w-full object-cover" style="aspect-ratio: 16/9;" />
+            <div class="product-overlay absolute inset-0 bg-obsidian/60 flex flex-col justify-end p-6">
+              <p class="font-mono text-smoke text-[0.65rem] uppercase tracking-widest mb-1">SS 2025</p>
+              <h3 class="font-display text-ivory text-2xl font-light italic mb-3">Spring / Summer</h3>
+              <button class="btn-ghost text-xs w-auto self-start">Explore</button>
+            </div>
+          </div>
+
+          <div class="product-card relative overflow-hidden cursor-pointer group flex-1">
+            <img src="https://placehold.co/580x500/141414/222?text=Archive" alt="Archive" class="w-full object-cover" style="aspect-ratio: 16/9;" />
+            <div class="product-overlay absolute inset-0 bg-obsidian/60 flex flex-col justify-end p-6">
+              <p class="font-mono text-smoke text-[0.65rem] uppercase tracking-widest mb-1">2018 — 2024</p>
+              <h3 class="font-display text-ivory text-2xl font-light italic mb-3">Archive</h3>
+              <button class="btn-ghost text-xs w-auto self-start">Browse</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Mobile view all -->
+      <div class="mt-8 text-center md:hidden">
+        <a href="#" class="font-body text-smoke text-[0.7rem] uppercase tracking-widest hover:text-gold transition-colors">View All Collections →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       PATTERNS — Digital products
+  ══════════════════════════════════════════ -->
+  <section class="py-24 md:py-36 bg-charcoal border-t border-ash">
+    <div class="max-w-[1440px] mx-auto px-6 md:px-16">
+
+      <div class="flex items-end justify-between mb-12 md:mb-16">
+        <div>
+          <p class="font-mono text-smoke text-[0.65rem] uppercase tracking-widest mb-3">Digital</p>
+          <h2 class="section-heading">Patterns</h2>
+        </div>
+        <a href="#" class="hidden md:block font-body text-smoke text-[0.7rem] uppercase tracking-widest hover:text-gold transition-colors border-b border-ash pb-0.5 hover:border-gold">All Patterns →</a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <!-- Pattern card -->
+        <div class="product-card cursor-pointer group">
+          <div class="overflow-hidden">
+            <img src="https://placehold.co/400x520/141414/2A2A2A?text=Pattern+I" alt="Sewing Pattern I" class="w-full object-cover" style="aspect-ratio: 3/4;" />
+          </div>
+          <div class="pt-4">
+            <p class="font-mono text-smoke text-[0.65rem] uppercase tracking-widest mb-1">Sewing Pattern · PDF</p>
+            <h3 class="font-display text-ivory text-xl font-light">The Structured Coat</h3>
+            <div class="flex items-center justify-between mt-3">
+              <span class="font-mono text-gold text-sm">$28.00</span>
+              <span class="font-body text-smoke text-[0.65rem] uppercase tracking-widest">Instant Download</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card cursor-pointer group">
+          <div class="overflow-hidden">
+            <img src="https://placehold.co/400x520/141414/1e1e1e?text=Pattern+II" alt="Sewing Pattern II" class="w-full object-cover" style="aspect-ratio: 3/4;" />
+          </div>
+          <div class="pt-4">
+            <p class="font-mono text-smoke text-[0.65rem] uppercase tracking-widest mb-1">Sewing Pattern · PDF</p>
+            <h3 class="font-display text-ivory text-xl font-light">Minimalist Trousers</h3>
+            <div class="flex items-center justify-between mt-3">
+              <span class="font-mono text-gold text-sm">$22.00</span>
+              <span class="font-body text-smoke text-[0.65rem] uppercase tracking-widest">Instant Download</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card cursor-pointer group">
+          <div class="overflow-hidden">
+            <img src="https://placehold.co/400x520/141414/252525?text=Pattern+III" alt="Knit Pattern" class="w-full object-cover" style="aspect-ratio: 3/4;" />
+          </div>
+          <div class="pt-4">
+            <p class="font-mono text-smoke text-[0.65rem] uppercase tracking-widest mb-1">Knit Pattern · PDF</p>
+            <h3 class="font-display text-ivory text-xl font-light">Heavy Gauge Sweater</h3>
+            <div class="flex items-center justify-between mt-3">
+              <span class="font-mono text-gold text-sm">$18.00</span>
+              <span class="font-body text-smoke text-[0.65rem] uppercase tracking-widest">Instant Download</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card cursor-pointer group">
+          <div class="overflow-hidden">
+            <img src="https://placehold.co/400x520/141414/1a1a1a?text=Lookbook" alt="Lookbook" class="w-full object-cover" style="aspect-ratio: 3/4;" />
+          </div>
+          <div class="pt-4">
+            <p class="font-mono text-smoke text-[0.65rem] uppercase tracking-widest mb-1">Lookbook · PDF</p>
+            <h3 class="font-display text-ivory text-xl font-light">AW 2025 Editorial</h3>
+            <div class="flex items-center justify-between mt-3">
+              <span class="font-mono text-gold text-sm">$12.00</span>
+              <span class="font-body text-smoke text-[0.65rem] uppercase tracking-widest">Instant Download</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Digital note -->
+      <p class="mt-10 text-smoke text-[0.7rem] font-body tracking-wide text-center">
+        All digital purchases are available immediately in your account · Downloads do not expire
+      </p>
+
+      <!-- ── Free Haori Pack ── -->
+      <div id="free-haori" class="mt-16 md:mt-20 border border-gold/30 bg-obsidian p-8 md:p-12 flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-16">
+        <div class="flex-1">
+          <p class="font-mono text-gold text-[0.6rem] uppercase tracking-widest mb-3">Free · No Account Required</p>
+          <h3 class="font-display text-ivory text-3xl md:text-4xl font-light italic mb-4">Free Haori Pack</h3>
+          <p class="font-body text-smoke text-sm leading-relaxed max-w-md">
+            A complete sewing pattern and construction guide for the Kishimoto Haori jacket. Yours to keep, share, and make. Nothing asked in return.
+          </p>
+        </div>
+        <div class="flex-shrink-0">
+          <a href="patterns/ichimatsu-set.html?pattern=haori" class="btn-primary inline-block text-center" style="min-width: 200px;">Download Free Pack</a>
+          <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mt-3 text-center">PDF · Free forever</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       ABOUT
+  ══════════════════════════════════════════ -->
+  <section id="about" class="py-24 md:py-36 bg-charcoal border-t border-ash">
+    <div class="max-w-[1440px] mx-auto px-6 md:px-16">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-20 items-center">
+
+        <div class="md:col-span-5">
+          <img src="https://placehold.co/640x800/0A0A0A/2A2A2A?text=Atelier" alt="Kishimoto Atelier" class="w-full object-cover" style="aspect-ratio: 4/5;" />
+        </div>
+
+        <div class="md:col-span-7 md:pl-10">
+          <p class="font-mono text-smoke text-[0.65rem] uppercase tracking-widest mb-4">About Kishimoto</p>
+          <h2 class="section-heading mb-8">A house built<br /><em>on restraint.</em></h2>
+          <div class="space-y-5 font-body text-smoke text-sm leading-loose max-w-prose">
+            <p>
+              Kishimoto was founded on a single conviction: that garments should outlive the moment they were made in. We design with natural materials, considered silhouettes, and an obsessive attention to construction.
+            </p>
+            <p>
+              We make both finished pieces and digital patterns — believing that the knowledge of how a garment is built is as valuable as the garment itself.
+            </p>
+            <p>
+              Our atelier is small by design. Production runs are limited. Nothing is restocked.
+            </p>
+          </div>
+          <div class="mt-10 flex items-center gap-6">
+            <button class="btn-ghost text-xs">Our Process</button>
+            <a href="#contact" class="font-body text-smoke text-[0.7rem] uppercase tracking-widest hover:text-gold transition-colors">Contact →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       CONTACT
+  ══════════════════════════════════════════ -->
+  <section id="contact" class="py-24 md:py-36 border-t border-ash">
+    <div class="max-w-[1440px] mx-auto px-6 md:px-16">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24">
+
+        <div>
+          <p class="font-mono text-smoke text-[0.65rem] uppercase tracking-widest mb-4">Get in Touch</p>
+          <h2 class="section-heading mb-8">Contact</h2>
+          <div class="space-y-6 font-body text-sm">
+            <div>
+              <p class="text-smoke text-[0.65rem] uppercase tracking-widest font-mono mb-1">General</p>
+              <a href="mailto:studio@kishimoto.co" class="text-bone hover:text-gold transition-colors">studio@kishimoto.co</a>
+            </div>
+            <div>
+              <p class="text-smoke text-[0.65rem] uppercase tracking-widest font-mono mb-1">Press &amp; Wholesale</p>
+              <a href="mailto:press@kishimoto.co" class="text-bone hover:text-gold transition-colors">press@kishimoto.co</a>
+            </div>
+            <div>
+              <p class="text-smoke text-[0.65rem] uppercase tracking-widest font-mono mb-1">Order Support</p>
+              <p class="text-smoke">Handled through your account dashboard.<br />Response within 24 hours.</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p class="font-body text-smoke text-sm mb-6 leading-relaxed">Leave a message. We read every one.</p>
+          <form class="space-y-4" onsubmit="return false;">
+            <input type="text" placeholder="Name" class="field" />
+            <input type="email" placeholder="Email address" class="field" />
+            <textarea placeholder="Your message" rows="5" class="field" style="resize:none;"></textarea>
+            <button class="btn-primary">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       FOOTER
+  ══════════════════════════════════════════ -->
+  <footer class="border-t border-ash py-12 bg-obsidian">
+    <div class="max-w-[1440px] mx-auto px-6 md:px-16">
+
+      <!-- Top footer row -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-10 mb-14">
+        <div class="col-span-2 md:col-span-1">
+          <p class="font-display text-ivory tracking-[0.25em] uppercase text-xl mb-4">Kishimoto</p>
+          <p class="font-body text-smoke text-xs leading-relaxed max-w-[200px]">
+            Luxury garments and digital patterns. Designed for permanence.
+          </p>
+        </div>
+        <div>
+          <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-4">Shop</p>
+          <ul class="space-y-2.5">
+            <li><a href="#" class="font-body text-smoke text-xs hover:text-gold transition-colors">Collections</a></li>
+            <li><a href="#" class="font-body text-smoke text-xs hover:text-gold transition-colors">Patterns</a></li>
+            <li><a href="#" class="font-body text-smoke text-xs hover:text-gold transition-colors">Lookbooks</a></li>
+            <li><a href="#" class="font-body text-smoke text-xs hover:text-gold transition-colors">Archive</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-4">Account</p>
+          <ul class="space-y-2.5">
+            <li><a href="#" onclick="openAccount()" class="font-body text-smoke text-xs hover:text-gold transition-colors">Sign In</a></li>
+            <li><a href="#" onclick="openAccount('register')" class="font-body text-smoke text-xs hover:text-gold transition-colors">Create Account</a></li>
+            <li><a href="#" class="font-body text-smoke text-xs hover:text-gold transition-colors">My Orders</a></li>
+            <li><a href="#" onclick="openAccount()" class="font-body text-smoke text-xs hover:text-gold transition-colors">Your Downloads</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-4">Information</p>
+          <ul class="space-y-2.5">
+            <li><a href="#about" class="font-body text-smoke text-xs hover:text-gold transition-colors">About Us</a></li>
+            <li><a href="#contact" class="font-body text-smoke text-xs hover:text-gold transition-colors">Contact</a></li>
+            <li><a href="#" class="font-body text-smoke text-xs hover:text-gold transition-colors">Shipping Policy</a></li>
+            <li><a href="#" class="font-body text-smoke text-xs hover:text-gold transition-colors">Returns</a></li>
+            <li><a href="#" class="font-body text-smoke text-xs hover:text-gold transition-colors">Privacy Policy</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Bottom footer row -->
+      <div class="border-t border-ash pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
+        <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest">© 2025 Kishimoto. All rights reserved.</p>
+        <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest">Tokyo · London</p>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ══════════════════════════════════════════
+       ACCOUNT MODAL
+  ══════════════════════════════════════════ -->
+  <div id="account-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
+
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-obsidian/80 modal-backdrop" onclick="closeAccount()"></div>
+
+    <!-- Panel -->
+    <div class="relative w-full max-w-md mx-4 bg-charcoal border border-ash" style="max-height:90vh; overflow-y:auto;">
+
+      <!-- Close -->
+      <button onclick="closeAccount()" class="absolute top-5 right-5 text-smoke hover:text-bone transition-colors" aria-label="Close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+
+      <!-- Auth panel (shown when logged out) -->
+      <div id="auth-panel">
+        <div class="px-8 pt-10 pb-6">
+          <p class="font-display text-ivory text-2xl font-light italic mb-1">Your Account</p>
+          <p class="font-body text-smoke text-xs">Access orders, downloads, and profile.</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex border-b border-ash px-8">
+          <button id="tab-signin" onclick="switchTab('signin')" class="tab-btn active font-mono text-smoke text-[0.65rem] uppercase tracking-widest pb-3 mr-8 border-b-2 transition-colors duration-150" style="border-color: transparent;">Sign In</button>
+          <button id="tab-register" onclick="switchTab('register')" class="tab-btn font-mono text-smoke text-[0.65rem] uppercase tracking-widest pb-3 border-b-2 transition-colors duration-150" style="border-color: transparent;">Create Account</button>
+        </div>
+
+        <!-- Sign In form -->
+        <div id="form-signin" class="px-8 py-8">
+          <form class="space-y-4" onsubmit="mockLogin(event)">
+            <div>
+              <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">Email</label>
+              <input type="email" placeholder="your@email.com" class="field" />
+            </div>
+            <div>
+              <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">Password</label>
+              <input type="password" placeholder="••••••••" class="field" />
+            </div>
+            <div class="flex items-center justify-between">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" class="accent-gold" />
+                <span class="font-body text-smoke text-xs">Remember me</span>
+              </label>
+              <a href="#" class="font-body text-smoke text-xs hover:text-gold transition-colors">Forgot password?</a>
+            </div>
+            <button type="submit" class="btn-primary mt-2">Sign In</button>
+          </form>
+          <div class="mt-6 pt-6 border-t border-ash">
+            <p class="font-body text-smoke text-xs text-center mb-4">Or continue with</p>
+            <button class="w-full border border-ash text-bone font-body text-xs py-3 hover:border-smoke transition-colors flex items-center justify-center gap-2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+              Continue with Google
+            </button>
+          </div>
+        </div>
+
+        <!-- Register form -->
+        <div id="form-register" class="px-8 py-8 hidden">
+          <form class="space-y-4" onsubmit="mockLogin(event)">
+            <div>
+              <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">Full Name</label>
+              <input type="text" placeholder="Your name" class="field" />
+            </div>
+            <div>
+              <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">Email</label>
+              <input type="email" placeholder="your@email.com" class="field" />
+            </div>
+            <div>
+              <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">Password</label>
+              <input type="password" placeholder="Min. 8 characters" class="field" />
+            </div>
+            <div>
+              <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">Confirm Password</label>
+              <input type="password" placeholder="Repeat password" class="field" />
+            </div>
+            <p class="font-body text-smoke text-[0.65rem] leading-relaxed">
+              By creating an account you agree to our <a href="#" class="text-gold hover:underline">Privacy Policy</a> and <a href="#" class="text-gold hover:underline">Terms of Service</a>.
+            </p>
+            <button type="submit" class="btn-primary">Create Account</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Account dashboard (shown when logged in) -->
+      <div id="account-dashboard" class="hidden">
+        <!-- Header -->
+        <div class="px-8 pt-10 pb-6 border-b border-ash flex items-center justify-between">
+          <div>
+            <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-1">Welcome back</p>
+            <p class="font-display text-ivory text-2xl font-light italic" id="dashboard-name">Yuki</p>
+          </div>
+          <button onclick="mockLogout()" class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest hover:text-gold transition-colors">Sign Out</button>
+        </div>
+
+        <!-- Nav tabs -->
+        <div class="flex border-b border-ash px-4">
+          <button onclick="showDashTab('orders')" id="dtab-orders" class="account-tab active font-mono text-smoke text-[0.6rem] uppercase tracking-widest px-4 py-3 hover:text-bone transition-colors">Orders</button>
+          <button onclick="showDashTab('downloads')" id="dtab-downloads" class="account-tab font-mono text-smoke text-[0.6rem] uppercase tracking-widest px-4 py-3 hover:text-bone transition-colors">Downloads</button>
+          <button onclick="showDashTab('profile')" id="dtab-profile" class="account-tab font-mono text-smoke text-[0.6rem] uppercase tracking-widest px-4 py-3 hover:text-bone transition-colors">Profile</button>
+        </div>
+
+        <!-- Orders panel -->
+        <div id="dash-orders" class="px-8 py-6">
+          <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-5">Recent Orders</p>
+          <div class="space-y-3">
+            <div class="border border-ash p-4 hover:border-smoke transition-colors">
+              <div class="flex items-start justify-between mb-2">
+                <div>
+                  <p class="font-mono text-bone text-xs">#KSH-2025-0041</p>
+                  <p class="font-body text-smoke text-xs mt-0.5">Structured Coat · Obsidian · M</p>
+                </div>
+                <span class="font-mono text-[0.6rem] uppercase tracking-widest px-2 py-0.5" style="color:#C9A96E; border: 1px solid #C9A96E;">Shipped</span>
+              </div>
+              <div class="flex items-center justify-between mt-3">
+                <p class="font-mono text-gold text-sm">£340.00</p>
+                <a href="#" class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest hover:text-gold transition-colors">Track →</a>
+              </div>
+            </div>
+            <div class="border border-ash p-4 hover:border-smoke transition-colors">
+              <div class="flex items-start justify-between mb-2">
+                <div>
+                  <p class="font-mono text-bone text-xs">#KSH-2025-0038</p>
+                  <p class="font-body text-smoke text-xs mt-0.5">Minimalist Trousers · Charcoal · S</p>
+                </div>
+                <span class="font-mono text-[0.6rem] uppercase tracking-widest px-2 py-0.5" style="color:#3D7A5E; border: 1px solid #3D7A5E;">Delivered</span>
+              </div>
+              <div class="flex items-center justify-between mt-3">
+                <p class="font-mono text-gold text-sm">£195.00</p>
+                <a href="#" class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest hover:text-gold transition-colors">Details →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Downloads panel -->
+        <div id="dash-downloads" class="px-8 py-6 hidden">
+          <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-5">Digital Purchases</p>
+          <div class="space-y-3">
+            <div class="border border-ash p-4 flex items-center justify-between hover:border-smoke transition-colors">
+              <div>
+                <p class="font-body text-bone text-sm">The Structured Coat — Sewing Pattern</p>
+                <p class="font-mono text-smoke text-xs mt-1">PDF · 12 pages · Purchased Apr 2025</p>
+              </div>
+              <button class="btn-ghost text-xs py-2 px-4 flex-shrink-0">Download</button>
+            </div>
+            <div class="border border-ash p-4 flex items-center justify-between hover:border-smoke transition-colors">
+              <div>
+                <p class="font-body text-bone text-sm">AW 2025 Editorial Lookbook</p>
+                <p class="font-mono text-smoke text-xs mt-1">PDF · 48 pages · Purchased Mar 2025</p>
+              </div>
+              <button class="btn-ghost text-xs py-2 px-4 flex-shrink-0">Download</button>
+            </div>
+          </div>
+          <p class="font-body text-smoke text-xs mt-6">Downloads are available indefinitely. Links are unique to your account.</p>
+        </div>
+
+        <!-- Profile panel -->
+        <div id="dash-profile" class="px-8 py-6 hidden">
+          <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-5">Profile Settings</p>
+          <form class="space-y-4" onsubmit="return false;">
+            <div>
+              <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">Full Name</label>
+              <input type="text" value="Yuki Tanaka" class="field" />
+            </div>
+            <div>
+              <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">Email</label>
+              <input type="email" value="yuki@kishimoto.co" class="field" />
+            </div>
+            <div class="pt-2">
+              <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-3">Change Password</p>
+              <div class="space-y-3">
+                <input type="password" placeholder="Current password" class="field" />
+                <input type="password" placeholder="New password" class="field" />
+              </div>
+            </div>
+            <button class="btn-primary mt-2">Save Changes</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════
+       JAVASCRIPT
+  ══════════════════════════════════════════ -->
+  <script>
+    // ── Header scroll effect ──
+    const header = document.getElementById('site-header')
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 60) {
+        header.style.background = 'rgba(10,10,10,0.96)'
+        header.style.borderBottom = '1px solid #2A2A2A'
+      } else {
+        header.style.background = 'rgba(10,10,10,0.0)'
+        header.style.borderBottom = '1px solid transparent'
+      }
+    })
+
+    // ── Mobile menu ──
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn')
+    const mobileNav = document.getElementById('mobile-nav')
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileNav.classList.toggle('hidden')
+    })
+
+    // ── Dropdown menus ──
+    document.querySelectorAll('.dropdown').forEach(dd => {
+      const menu = dd.querySelector('.dropdown-menu')
+      let closeTimer
+
+      dd.addEventListener('mouseenter', () => {
+        clearTimeout(closeTimer)
+        menu.classList.add('is-open')
+      })
+
+      dd.addEventListener('mouseleave', () => {
+        closeTimer = setTimeout(() => menu.classList.remove('is-open'), 150)
+      })
+    })
+
+    // ── Account modal ──
+    let isLoggedIn = false
+
+    function openAccount(tab) {
+      const modal = document.getElementById('account-modal')
+      modal.classList.remove('hidden')
+      document.body.style.overflow = 'hidden'
+      if (tab === 'register') switchTab('register')
+      if (isLoggedIn) {
+        window.location.href = 'account/account.html'
+      }
+    }
+
+    function closeAccount() {
+      document.getElementById('account-modal').classList.add('hidden')
+      document.body.style.overflow = ''
+    }
+
+    function switchTab(tab) {
+      const signinTab = document.getElementById('tab-signin')
+      const registerTab = document.getElementById('tab-register')
+      const formSignin = document.getElementById('form-signin')
+      const formRegister = document.getElementById('form-register')
+
+      if (tab === 'signin') {
+        signinTab.classList.add('active')
+        signinTab.style.borderColor = '#C9A96E'
+        signinTab.style.color = '#F5F0E8'
+        registerTab.classList.remove('active')
+        registerTab.style.borderColor = 'transparent'
+        registerTab.style.color = ''
+        formSignin.classList.remove('hidden')
+        formRegister.classList.add('hidden')
+      } else {
+        registerTab.classList.add('active')
+        registerTab.style.borderColor = '#C9A96E'
+        registerTab.style.color = '#F5F0E8'
+        signinTab.classList.remove('active')
+        signinTab.style.borderColor = 'transparent'
+        signinTab.style.color = ''
+        formRegister.classList.remove('hidden')
+        formSignin.classList.add('hidden')
+      }
+    }
+
+    function mockLogin(e) {
+      e.preventDefault()
+      isLoggedIn = true
+      window.location.href = 'account/account.html'
+    }
+
+    function mockLogout() {
+      isLoggedIn = false
+      document.getElementById('account-dashboard').classList.add('hidden')
+      document.getElementById('auth-panel').classList.remove('hidden')
+      switchTab('signin')
+    }
+
+    function showDashTab(tab) {
+      const tabs = ['orders', 'downloads', 'profile']
+      tabs.forEach(t => {
+        const btn = document.getElementById('dtab-' + t)
+        const panel = document.getElementById('dash-' + t)
+        if (t === tab) {
+          panel.classList.remove('hidden')
+          btn.style.color = '#F5F0E8'
+          btn.style.borderLeft = '2px solid #C9A96E'
+          btn.style.paddingLeft = 'calc(1rem - 2px)'
+        } else {
+          panel.classList.add('hidden')
+          btn.style.color = ''
+          btn.style.borderLeft = ''
+          btn.style.paddingLeft = ''
+        }
+      })
+    }
+
+    document.getElementById('account-btn').addEventListener('click', () => openAccount())
+
+    // ── Escape key closes modal ──
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeAccount()
+    })
+
+    // ── Keyframes ──
+    const style = document.createElement('style')
+    style.textContent = `
+      @keyframes livePulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.85); }
+      }
+    `
+    document.head.appendChild(style)
+
+    // ── Hover video: lazy-load src on first hover, then play/pause ──
+    document.querySelectorAll('.category-card').forEach(card => {
+      const video = card.querySelector('.card-video')
+      if (!video) return
+
+      card.addEventListener('mouseenter', () => {
+        if (!video.getAttribute('src') && video.dataset.src) {
+          video.src = video.dataset.src
+          video.load()
+          video.addEventListener('canplay', () => video.play().catch(() => {}), { once: true })
+        } else {
+          video.play().catch(() => {})
+        }
+      })
+
+      card.addEventListener('mouseleave', () => {
+        video.pause()
+        video.currentTime = 0
+      })
+    })
+  </script>
+</body>
+</html>
