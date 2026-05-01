@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account — Kishimoto</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            obsidian:  '#0A0A0A',
+            charcoal:  '#141414',
+            ash:       '#2A2A2A',
+            smoke:     '#6B6B6B',
+            bone:      '#E8E0D5',
+            ivory:     '#F5F0E8',
+            gold:      '#C9A96E',
+            'gold-dim':'#8A6F3E',
+            error:     '#A34040',
+            success:   '#3D7A5E',
+          },
+          fontFamily: {
+            display: ['"Cormorant Garamond"', 'serif'],
+            body:    ['"DM Sans"', 'sans-serif'],
+            mono:    ['"Courier Prime"', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: #0A0A0A;
+      color: #E8E0D5;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      margin: 0;
+    }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #0A0A0A; }
+    ::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 2px; }
+
+    .nav-link {
+      position: relative;
+      letter-spacing: 0.18em;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 0; height: 1px;
+      background: #C9A96E;
+      transition: width 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    .nav-link:hover::after { width: 100%; }
+
+    .field {
+      background: #1a1a1a;
+      border: 1px solid #2A2A2A;
+      color: #E8E0D5;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      transition: border-color 0.2s;
+      outline: none;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 2px;
+    }
+    .field::placeholder { color: #6B6B6B; }
+    .field:focus { border-color: #C9A96E; }
+
+    .btn-primary {
+      background: #C9A96E;
+      color: #0A0A0A;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.875rem 2rem;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover { background: #b8965a; }
+
+    .btn-ghost {
+      background: transparent;
+      color: #C9A96E;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.75rem 1.5rem;
+      border: 1px solid #C9A96E;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { background: #C9A96E; color: #0A0A0A; }
+
+    /* ── Sidebar nav ── */
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #6B6B6B;
+      cursor: pointer;
+      transition: color 0.2s, background 0.2s;
+      border-left: 2px solid transparent;
+    }
+    .sidebar-link:hover { color: #E8E0D5; background: rgba(42,42,42,0.4); }
+    .sidebar-link.active {
+      color: #F5F0E8;
+      border-left-color: #C9A96E;
+      background: rgba(201,169,110,0.06);
+    }
+    .sidebar-link svg { flex-shrink: 0; opacity: 0.6; }
+    .sidebar-link.active svg { opacity: 1; }
+
+    /* ── Status badges ── */
+    .badge { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; display: inline-block; }
+    .badge-shipped   { color: #C9A96E; border: 1px solid #C9A96E; }
+    .badge-delivered { color: #3D7A5E; border: 1px solid #3D7A5E; }
+    .badge-pending   { color: #6B6B6B; border: 1px solid #2A2A2A; }
+    .badge-cancelled { color: #A34040; border: 1px solid #A34040; }
+
+    /* ── Dropdown (header) ── */
+    .dropdown-menu {
+      opacity: 0; pointer-events: none; transform: translateY(-8px);
+      transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.22,1,0.36,1);
+    }
+    .dropdown-menu.is-open {
+      opacity: 1; pointer-events: auto; transform: translateY(0);
+    }
+
+    /* ── Panel fade-in ── */
+    .panel { display: none; animation: fadeUp 0.25s cubic-bezier(0.22,1,0.36,1); }
+    .panel.active { display: block; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .desktop-nav { display: none; }
+    }
+  </style>
+</head>
+
+<body class="bg-obsidian text-bone">
+
+  <!-- ══════════════════════════════════════════
+       HEADER
+  ══════════════════════════════════════════ -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-obsidian/95 border-b border-ash">
+    <div class="max-w-[1440px] mx-auto px-6 md:px-12">
+      <div class="flex items-center justify-between h-20">
+
+        <!-- Left nav -->
+        <nav class="desktop-nav flex items-center gap-8">
+          <div class="dropdown relative">
+            <button class="nav-link text-bone text-[0.7rem] font-body uppercase tracking-widest hover:text-ivory transition-colors flex items-center gap-1">
+              Collections
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" class="opacity-50"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            </button>
+            <div class="dropdown-menu absolute top-full left-0 mt-3 w-48 bg-charcoal border border-ash py-2 z-50">
+              <a href="../collections/demon-corp.html" class="block px-5 py-2.5 text-[0.7rem] uppercase tracking-widest text-smoke hover:text-gold hover:bg-ash/30 transition-colors duration-150">Demon Corp.</a>
+              <a href="../collections/the-attack.html" class="block px-5 py-2.5 text-[0.7rem] uppercase tracking-widest text-smoke hover:text-gold hover:bg-ash/30 transition-colors duration-150">The Attack</a>
+              <a href="../collections/hidden-village.html" class="block px-5 py-2.5 text-[0.7rem] uppercase tracking-widest text-smoke hover:text-gold hover:bg-ash/30 transition-colors duration-150">Hidden Village</a>
+              <div class="my-1.5 border-t border-ash"></div>
+              <a href="../collections/all-collections.html" class="block px-5 py-2.5 text-[0.7rem] uppercase tracking-widest text-smoke hover:text-gold hover:bg-ash/30 transition-colors duration-150">All Collections</a>
+            </div>
+          </div>
+          <div class="dropdown relative">
+            <button class="nav-link text-bone text-[0.7rem] font-body uppercase tracking-widest hover:text-ivory transition-colors flex items-center gap-1">
+              Patterns
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" class="opacity-50"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            </button>
+            <div class="dropdown-menu absolute top-full left-0 mt-3 w-52 bg-charcoal border border-ash py-2 z-50">
+              <a href="../patterns/physical-packs.html" class="block px-5 py-2.5 text-[0.7rem] uppercase tracking-widest text-smoke hover:text-gold hover:bg-ash/30 transition-colors duration-150">Physical Packs</a>
+              <a href="../patterns/digital-packs.html" class="block px-5 py-2.5 text-[0.7rem] uppercase tracking-widest text-smoke hover:text-gold hover:bg-ash/30 transition-colors duration-150">Digital Packs</a>
+              <a href="../index.html#free-haori" class="block px-5 py-2.5 text-[0.7rem] uppercase tracking-widest text-gold hover:bg-ash/30 transition-colors duration-150">Free Haori Pack</a>
+              <div class="my-1.5 border-t border-ash"></div>
+              <a href="#" onclick="showPanel('downloads')" class="block px-5 py-2.5 text-[0.7rem] uppercase tracking-widest text-gold hover:bg-ash/30 transition-colors duration-150">Your Digital Downloads ↗</a>
+            </div>
+          </div>
+        </nav>
+
+        <!-- Brand -->
+        <a href="../index.html" class="absolute left-1/2 -translate-x-1/2 font-display text-ivory tracking-[0.3em] uppercase text-2xl md:text-3xl select-none hover:text-gold transition-colors duration-300">Kishimoto</a>
+
+        <!-- Right -->
+        <div class="flex items-center gap-5 ml-auto">
+          <nav class="desktop-nav flex items-center gap-8 mr-6">
+            <a href="../admin/spreadsheet.html" class="nav-link text-bone text-[0.7rem] uppercase tracking-widest hover:text-ivory transition-colors">The Spreadsheet</a>
+            <a href="../index.html#about" class="nav-link text-bone text-[0.7rem] uppercase tracking-widest hover:text-ivory transition-colors">About</a>
+            <a href="../index.html#contact" class="nav-link text-bone text-[0.7rem] uppercase tracking-widest hover:text-ivory transition-colors">Contact</a>
+          </nav>
+          <!-- Account icon — gold because we're logged in -->
+          <button class="text-gold p-1" aria-label="Account">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+          </button>
+          <!-- Cart -->
+          <button class="text-smoke hover:text-bone transition-colors p-1 relative" aria-label="Cart">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
+            </svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ══════════════════════════════════════════
+       ACCOUNT LAYOUT
+  ══════════════════════════════════════════ -->
+  <div class="pt-20 min-h-screen flex flex-col md:flex-row max-w-[1440px] mx-auto">
+
+    <!-- ── Sidebar ── -->
+    <aside class="md:w-64 lg:w-72 flex-shrink-0 border-b md:border-b-0 md:border-r border-ash">
+
+      <!-- User identity -->
+      <div class="px-6 py-8 border-b border-ash">
+        <div class="w-12 h-12 rounded-full bg-ash flex items-center justify-center mb-4 border border-ash">
+          <span class="font-display text-ivory text-xl font-light">Y</span>
+        </div>
+        <p class="font-display text-ivory text-xl font-light">Yuki Tanaka</p>
+        <p class="font-mono text-smoke text-xs mt-1">demo@kishimoto.co</p>
+        <p class="font-mono text-gold text-[0.6rem] uppercase tracking-widest mt-2">Member since Jan 2024</p>
+      </div>
+
+      <!-- Nav links -->
+      <nav class="py-4">
+        <button onclick="showPanel('overview')" id="nav-overview" class="sidebar-link active w-full text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Overview
+        </button>
+        <button onclick="showPanel('orders')" id="nav-orders" class="sidebar-link w-full text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          Orders
+          <span class="ml-auto font-mono text-[0.6rem] text-smoke">3</span>
+        </button>
+        <button onclick="showPanel('downloads')" id="nav-downloads" class="sidebar-link w-full text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Downloads
+          <span class="ml-auto font-mono text-[0.6rem] text-gold">2</span>
+        </button>
+        <button onclick="showPanel('addresses')" id="nav-addresses" class="sidebar-link w-full text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Addresses
+        </button>
+        <button onclick="showPanel('profile')" id="nav-profile" class="sidebar-link w-full text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Profile
+        </button>
+      </nav>
+
+      <!-- Sign out -->
+      <div class="px-4 pb-8 mt-auto border-t border-ash pt-4">
+        <a href="../index.html" class="sidebar-link text-left w-full flex items-center gap-3" style="border-left-color: transparent;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </a>
+      </div>
+    </aside>
+
+
+    <!-- ── Main content ── -->
+    <main class="flex-1 px-6 md:px-10 lg:px-16 py-10 md:py-14">
+
+
+      <!-- ════ OVERVIEW ════ -->
+      <div id="panel-overview" class="panel active">
+        <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-1">Dashboard</p>
+        <h1 class="font-display text-ivory text-3xl md:text-4xl font-light italic mb-10">Welcome back, Yuki.</h1>
+
+        <!-- Stat cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+          <div class="bg-charcoal border border-ash p-5">
+            <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-3">Total Orders</p>
+            <p class="font-display text-ivory text-4xl font-light">3</p>
+          </div>
+          <div class="bg-charcoal border border-ash p-5">
+            <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-3">In Transit</p>
+            <p class="font-display text-gold text-4xl font-light">1</p>
+          </div>
+          <div class="bg-charcoal border border-ash p-5">
+            <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-3">Downloads</p>
+            <p class="font-display text-ivory text-4xl font-light">2</p>
+          </div>
+          <div class="bg-charcoal border border-ash p-5">
+            <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-3">Total Spent</p>
+            <p class="font-display text-ivory text-4xl font-light">£757</p>
+          </div>
+        </div>
+
+        <!-- Recent order -->
+        <div class="mb-10">
+          <div class="flex items-center justify-between mb-5">
+            <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest">Most Recent Order</p>
+            <button onclick="showPanel('orders')" class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest hover:text-gold transition-colors">All Orders →</button>
+          </div>
+          <div class="border border-ash bg-charcoal p-6">
+            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-5">
+              <div>
+                <p class="font-mono text-bone text-sm">#KSH-2025-0041</p>
+                <p class="font-body text-smoke text-xs mt-1">Placed 18 Apr 2025</p>
+              </div>
+              <span class="badge badge-shipped">Shipped</span>
+            </div>
+            <div class="flex items-center gap-4 mb-5 pb-5 border-b border-ash">
+              <img src="https://placehold.co/64x80/141414/2A2A2A?text=." alt="" class="w-16 object-cover flex-shrink-0" style="aspect-ratio:4/5;" />
+              <div>
+                <p class="font-body text-bone text-sm">Structured Coat</p>
+                <p class="font-mono text-smoke text-xs mt-0.5">Obsidian · Size M</p>
+                <p class="font-mono text-gold text-sm mt-1">£340.00</p>
+              </div>
+            </div>
+            <!-- Tracking bar -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest">Tracking</p>
+                <p class="font-mono text-smoke text-[0.6rem]">DHL · KSH8821049UK</p>
+              </div>
+              <div class="relative">
+                <div class="h-px bg-ash w-full"></div>
+                <div class="h-px bg-gold absolute top-0 left-0" style="width: 66%;"></div>
+                <div class="flex justify-between mt-3">
+                  <div class="text-center">
+                    <div class="w-2 h-2 rounded-full bg-gold mx-auto mb-1"></div>
+                    <p class="font-mono text-gold text-[0.55rem] uppercase tracking-wide">Order placed</p>
+                  </div>
+                  <div class="text-center">
+                    <div class="w-2 h-2 rounded-full bg-gold mx-auto mb-1"></div>
+                    <p class="font-mono text-gold text-[0.55rem] uppercase tracking-wide">Dispatched</p>
+                  </div>
+                  <div class="text-center">
+                    <div class="w-2 h-2 rounded-full bg-gold mx-auto mb-1"></div>
+                    <p class="font-mono text-gold text-[0.55rem] uppercase tracking-wide">In transit</p>
+                  </div>
+                  <div class="text-center">
+                    <div class="w-2 h-2 rounded-full bg-ash mx-auto mb-1"></div>
+                    <p class="font-mono text-smoke text-[0.55rem] uppercase tracking-wide">Delivered</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Downloads quick access -->
+        <div>
+          <div class="flex items-center justify-between mb-5">
+            <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest">Your Downloads</p>
+            <button onclick="showPanel('downloads')" class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest hover:text-gold transition-colors">All Downloads →</button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="border border-ash bg-charcoal p-5 flex items-center gap-4">
+              <div class="w-10 h-10 bg-ash flex items-center justify-center flex-shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="font-body text-bone text-sm truncate">The Structured Coat</p>
+                <p class="font-mono text-smoke text-xs mt-0.5">PDF · Sewing Pattern</p>
+              </div>
+              <button class="btn-ghost text-[0.6rem] py-1.5 px-3 flex-shrink-0">↓</button>
+            </div>
+            <div class="border border-ash bg-charcoal p-5 flex items-center gap-4">
+              <div class="w-10 h-10 bg-ash flex items-center justify-center flex-shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="font-body text-bone text-sm truncate">AW 2025 Editorial Lookbook</p>
+                <p class="font-mono text-smoke text-xs mt-0.5">PDF · Lookbook</p>
+              </div>
+              <button class="btn-ghost text-[0.6rem] py-1.5 px-3 flex-shrink-0">↓</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ════ ORDERS ════ -->
+      <div id="panel-orders" class="panel">
+        <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-1">Your Account</p>
+        <h1 class="font-display text-ivory text-3xl md:text-4xl font-light italic mb-10">Orders</h1>
+
+        <div class="space-y-5">
+
+          <!-- Order 1 — Shipped -->
+          <div class="border border-ash bg-charcoal">
+            <!-- Order header -->
+            <div class="px-6 py-4 border-b border-ash flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+              <div class="flex items-center gap-5">
+                <div>
+                  <p class="font-mono text-bone text-sm">#KSH-2025-0041</p>
+                  <p class="font-body text-smoke text-xs mt-0.5">18 Apr 2025 · 1 item</p>
+                </div>
+                <span class="badge badge-shipped">Shipped</span>
+              </div>
+              <p class="font-mono text-gold text-sm">£340.00</p>
+            </div>
+            <!-- Item -->
+            <div class="px-6 py-5 flex items-start gap-5 border-b border-ash">
+              <img src="https://placehold.co/72x90/141414/2A2A2A?text=." alt="" class="w-16 object-cover flex-shrink-0" style="aspect-ratio:4/5;" />
+              <div class="flex-1">
+                <p class="font-body text-bone text-sm">Structured Coat</p>
+                <p class="font-mono text-smoke text-xs mt-0.5">Obsidian · Size M</p>
+                <p class="font-mono text-gold text-sm mt-2">£340.00</p>
+              </div>
+            </div>
+            <!-- Tracking -->
+            <div class="px-6 py-5">
+              <div class="flex items-start justify-between gap-6">
+                <div class="flex-1">
+                  <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-3">Shipment Tracking</p>
+                  <div class="relative mb-4">
+                    <div class="h-px bg-ash w-full"></div>
+                    <div class="h-px bg-gold absolute top-0 left-0" style="width: 66%;"></div>
+                    <div class="flex justify-between mt-3">
+                      <div class="text-center">
+                        <div class="w-1.5 h-1.5 rounded-full bg-gold mx-auto mb-1"></div>
+                        <p class="font-mono text-gold text-[0.5rem] uppercase">Placed</p>
+                      </div>
+                      <div class="text-center">
+                        <div class="w-1.5 h-1.5 rounded-full bg-gold mx-auto mb-1"></div>
+                        <p class="font-mono text-gold text-[0.5rem] uppercase">Dispatched</p>
+                      </div>
+                      <div class="text-center">
+                        <div class="w-1.5 h-1.5 rounded-full bg-gold mx-auto mb-1"></div>
+                        <p class="font-mono text-gold text-[0.5rem] uppercase">In Transit</p>
+                      </div>
+                      <div class="text-center">
+                        <div class="w-1.5 h-1.5 rounded-full bg-ash mx-auto mb-1"></div>
+                        <p class="font-mono text-smoke text-[0.5rem] uppercase">Delivered</p>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="font-mono text-smoke text-[0.6rem]">DHL Express · <span class="text-bone">KSH8821049UK</span></p>
+                  <p class="font-mono text-smoke text-[0.6rem] mt-1">Est. delivery: <span class="text-bone">22 Apr 2025</span></p>
+                </div>
+                <div class="flex flex-col gap-2 flex-shrink-0">
+                  <button class="btn-ghost text-[0.6rem] py-2 px-4">Track Shipment</button>
+                  <button class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest hover:text-gold transition-colors text-right">Invoice PDF</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Order 2 — Delivered -->
+          <div class="border border-ash bg-charcoal">
+            <div class="px-6 py-4 border-b border-ash flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+              <div class="flex items-center gap-5">
+                <div>
+                  <p class="font-mono text-bone text-sm">#KSH-2025-0038</p>
+                  <p class="font-body text-smoke text-xs mt-0.5">2 Mar 2025 · 2 items</p>
+                </div>
+                <span class="badge badge-delivered">Delivered</span>
+              </div>
+              <p class="font-mono text-gold text-sm">£245.00</p>
+            </div>
+            <div class="px-6 py-5 space-y-4 border-b border-ash">
+              <div class="flex items-start gap-5">
+                <img src="https://placehold.co/72x90/141414/1e1e1e?text=." alt="" class="w-16 object-cover flex-shrink-0" style="aspect-ratio:4/5;" />
+                <div>
+                  <p class="font-body text-bone text-sm">Minimalist Trousers</p>
+                  <p class="font-mono text-smoke text-xs mt-0.5">Charcoal · Size S</p>
+                  <p class="font-mono text-gold text-sm mt-2">£195.00</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-5">
+                <div class="w-16 h-20 bg-charcoal border border-ash flex items-center justify-center flex-shrink-0">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <div>
+                  <p class="font-body text-bone text-sm">AW 2025 Editorial Lookbook</p>
+                  <p class="font-mono text-smoke text-xs mt-0.5">PDF · Digital</p>
+                  <p class="font-mono text-gold text-sm mt-2">£50.00</p>
+                </div>
+              </div>
+            </div>
+            <div class="px-6 py-4 flex items-center justify-between">
+              <p class="font-mono text-smoke text-[0.6rem]">Delivered 9 Mar 2025 · Royal Mail</p>
+              <button class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest hover:text-gold transition-colors">Invoice PDF</button>
+            </div>
+          </div>
+
+          <!-- Order 3 — Digital only -->
+          <div class="border border-ash bg-charcoal">
+            <div class="px-6 py-4 border-b border-ash flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+              <div class="flex items-center gap-5">
+                <div>
+                  <p class="font-mono text-bone text-sm">#KSH-2025-0029</p>
+                  <p class="font-body text-smoke text-xs mt-0.5">14 Jan 2025 · 1 item</p>
+                </div>
+                <span class="badge badge-delivered">Delivered</span>
+              </div>
+              <p class="font-mono text-gold text-sm">£28.00</p>
+            </div>
+            <div class="px-6 py-5 flex items-start gap-5 border-b border-ash">
+              <div class="w-16 h-20 bg-charcoal border border-ash flex items-center justify-center flex-shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <div>
+                <p class="font-body text-bone text-sm">The Structured Coat — Sewing Pattern</p>
+                <p class="font-mono text-smoke text-xs mt-0.5">PDF · Digital Download</p>
+                <p class="font-mono text-gold text-sm mt-2">£28.00</p>
+              </div>
+            </div>
+            <div class="px-6 py-4 flex items-center justify-between">
+              <p class="font-mono text-smoke text-[0.6rem]">Instant delivery · Available in Downloads</p>
+              <button onclick="showPanel('downloads')" class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest hover:text-gold transition-colors">Go to Downloads →</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- ════ DOWNLOADS ════ -->
+      <div id="panel-downloads" class="panel">
+        <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-1">Your Account</p>
+        <h1 class="font-display text-ivory text-3xl md:text-4xl font-light italic mb-3">Downloads</h1>
+        <p class="font-body text-smoke text-sm mb-10">All digital purchases are stored here permanently. Download as many times as you need.</p>
+
+        <div class="space-y-4">
+
+          <!-- Download item 1 -->
+          <div class="border border-ash bg-charcoal p-6 flex flex-col sm:flex-row sm:items-center gap-5">
+            <div class="w-14 h-18 bg-ash flex items-center justify-center flex-shrink-0" style="width:56px; height:72px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-body text-bone text-base">The Structured Coat — Sewing Pattern</p>
+              <p class="font-mono text-smoke text-xs mt-1">PDF · 12 pages · A0 + A4 print sheets included</p>
+              <div class="flex items-center gap-4 mt-2">
+                <span class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest">Order #KSH-2025-0029</span>
+                <span class="font-mono text-smoke text-[0.6rem]">·</span>
+                <span class="font-mono text-smoke text-[0.6rem]">Purchased 14 Jan 2025</span>
+              </div>
+            </div>
+            <div class="flex flex-col gap-2 flex-shrink-0 items-end">
+              <button class="btn-primary text-xs py-2.5 px-6">Download PDF</button>
+              <p class="font-mono text-smoke text-[0.55rem] uppercase tracking-widest">Downloaded 3 times</p>
+            </div>
+          </div>
+
+          <!-- Download item 2 -->
+          <div class="border border-ash bg-charcoal p-6 flex flex-col sm:flex-row sm:items-center gap-5">
+            <div class="w-14 h-18 bg-ash flex items-center justify-center flex-shrink-0" style="width:56px; height:72px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-body text-bone text-base">AW 2025 Editorial Lookbook</p>
+              <p class="font-mono text-smoke text-xs mt-1">PDF · 48 pages · High resolution print quality</p>
+              <div class="flex items-center gap-4 mt-2">
+                <span class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest">Order #KSH-2025-0038</span>
+                <span class="font-mono text-smoke text-[0.6rem]">·</span>
+                <span class="font-mono text-smoke text-[0.6rem]">Purchased 2 Mar 2025</span>
+              </div>
+            </div>
+            <div class="flex flex-col gap-2 flex-shrink-0 items-end">
+              <button class="btn-primary text-xs py-2.5 px-6">Download PDF</button>
+              <p class="font-mono text-smoke text-[0.55rem] uppercase tracking-widest">Downloaded 1 time</p>
+            </div>
+          </div>
+
+        </div>
+
+        <p class="font-body text-smoke text-xs mt-8 leading-relaxed">
+          Downloads are tied to your account and available indefinitely. Each file is uniquely watermarked. If you lose access, contact <a href="mailto:studio@kishimoto.co" class="text-gold hover:underline">studio@kishimoto.co</a>.
+        </p>
+      </div>
+
+
+      <!-- ════ ADDRESSES ════ -->
+      <div id="panel-addresses" class="panel">
+        <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-1">Your Account</p>
+        <h1 class="font-display text-ivory text-3xl md:text-4xl font-light italic mb-10">Addresses</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
+
+          <!-- Saved address -->
+          <div class="border border-gold/40 bg-charcoal p-6 relative">
+            <div class="flex items-start justify-between mb-3">
+              <span class="font-mono text-gold text-[0.6rem] uppercase tracking-widest">Default</span>
+              <button class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest hover:text-gold transition-colors">Edit</button>
+            </div>
+            <p class="font-body text-bone text-sm leading-relaxed">
+              Yuki Tanaka<br />
+              14 Albion Street<br />
+              London<br />
+              SE1 7HB<br />
+              United Kingdom
+            </p>
+          </div>
+
+          <!-- Add new address -->
+          <button class="border border-ash border-dashed bg-transparent p-6 flex flex-col items-center justify-center gap-3 hover:border-smoke transition-colors cursor-pointer group" style="min-height: 160px;" onclick="document.getElementById('add-address-form').classList.toggle('hidden')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6B6B6B" stroke-width="1.5" stroke-linecap="round" class="group-hover:stroke-bone transition-colors"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest group-hover:text-bone transition-colors">Add Address</p>
+          </button>
+
+        </div>
+
+        <!-- Add address form (hidden by default) -->
+        <div id="add-address-form" class="hidden border border-ash bg-charcoal p-6">
+          <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-5">New Address</p>
+          <form class="grid grid-cols-1 sm:grid-cols-2 gap-4" onsubmit="return false;">
+            <div class="sm:col-span-2">
+              <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">Full Name</label>
+              <input type="text" placeholder="Recipient name" class="field" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">Address Line 1</label>
+              <input type="text" placeholder="Street address" class="field" />
+            </div>
+            <div>
+              <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">City</label>
+              <input type="text" placeholder="City" class="field" />
+            </div>
+            <div>
+              <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">Postcode / ZIP</label>
+              <input type="text" placeholder="Postcode" class="field" />
+            </div>
+            <div>
+              <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">Country</label>
+              <input type="text" placeholder="Country" class="field" />
+            </div>
+            <div class="sm:col-span-2 flex gap-3 mt-2">
+              <button type="submit" class="btn-primary">Save Address</button>
+              <button type="button" onclick="document.getElementById('add-address-form').classList.add('hidden')" class="btn-ghost">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+
+      <!-- ════ PROFILE ════ -->
+      <div id="panel-profile" class="panel">
+        <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-1">Your Account</p>
+        <h1 class="font-display text-ivory text-3xl md:text-4xl font-light italic mb-10">Profile</h1>
+
+        <div class="max-w-lg space-y-10">
+
+          <!-- Personal info -->
+          <div>
+            <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-5">Personal Information</p>
+            <form class="space-y-4" onsubmit="return false;">
+              <div>
+                <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">Full Name</label>
+                <input type="text" value="Yuki Tanaka" class="field" />
+              </div>
+              <div>
+                <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">Email Address</label>
+                <input type="email" value="demo@kishimoto.co" class="field" />
+              </div>
+              <div>
+                <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">Phone (optional)</label>
+                <input type="tel" placeholder="+44 000 000 0000" class="field" />
+              </div>
+              <button type="submit" class="btn-primary">Save Changes</button>
+            </form>
+          </div>
+
+          <!-- Password -->
+          <div class="border-t border-ash pt-10">
+            <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-5">Change Password</p>
+            <form class="space-y-4" onsubmit="return false;">
+              <div>
+                <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">Current Password</label>
+                <input type="password" placeholder="••••••••" class="field" />
+              </div>
+              <div>
+                <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">New Password</label>
+                <input type="password" placeholder="Min. 8 characters" class="field" />
+              </div>
+              <div>
+                <label class="block font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">Confirm New Password</label>
+                <input type="password" placeholder="Repeat new password" class="field" />
+              </div>
+              <button type="submit" class="btn-primary">Update Password</button>
+            </form>
+          </div>
+
+          <!-- Danger zone -->
+          <div class="border-t border-ash pt-10">
+            <p class="font-mono text-smoke text-[0.6rem] uppercase tracking-widest mb-2">Account</p>
+            <p class="font-body text-smoke text-xs mb-5 leading-relaxed">Closing your account will permanently remove your profile and order history. Your digital downloads will become inaccessible.</p>
+            <button class="font-mono text-[0.65rem] uppercase tracking-widest px-4 py-2.5 border transition-colors" style="color:#A34040; border-color:#A34040;" onmouseenter="this.style.background='rgba(163,64,64,0.1)'" onmouseleave="this.style.background=''">Close Account</button>
+          </div>
+
+        </div>
+      </div>
+
+
+    </main>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════
+       JAVASCRIPT
+  ══════════════════════════════════════════ -->
+  <script>
+    // ── Dropdown menus ──
+    document.querySelectorAll('.dropdown').forEach(dd => {
+      const menu = dd.querySelector('.dropdown-menu')
+      let closeTimer
+      dd.addEventListener('mouseenter', () => { clearTimeout(closeTimer); menu.classList.add('is-open') })
+      dd.addEventListener('mouseleave', () => { closeTimer = setTimeout(() => menu.classList.remove('is-open'), 150) })
+    })
+
+    function showPanel(id) {
+      // Deactivate all panels and nav links
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'))
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'))
+
+      // Activate target
+      const panel = document.getElementById('panel-' + id)
+      const nav   = document.getElementById('nav-' + id)
+      if (panel) panel.classList.add('active')
+      if (nav)   nav.classList.add('active')
+
+      // Scroll to top of content on mobile
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
+    // Honour ?tab= query param for deep-linking
+    const params = new URLSearchParams(window.location.search)
+    const tab = params.get('tab')
+    if (tab) showPanel(tab)
+  </script>
+</body>
+</html>
